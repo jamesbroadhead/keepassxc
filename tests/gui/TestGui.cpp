@@ -1090,9 +1090,9 @@ void TestGui::testPasswordGeneratorNarrowWidth()
         generator.resize(1000, generator.height());
         QTRY_COMPARE(extAsciiButton->y(), upperButton->y());
 
-        // Roughly a third of a laptop screen, as when tiled by a window manager, with room for wider fonts
-        generator.resize(520, generator.height());
-        QTRY_COMPARE(generator.width(), 520);
+        // A third of a 1512 pt wide laptop screen, as when tiled by a window manager
+        generator.resize(500, generator.height());
+        QTRY_COMPARE(generator.width(), 500);
         auto* groupBox = generator.findChild<QGroupBox*>("groupBox");
         for (auto* button : groupBox->findChildren<QPushButton*>(QString(), Qt::FindDirectChildrenOnly)) {
             if (button->isVisible()) {
