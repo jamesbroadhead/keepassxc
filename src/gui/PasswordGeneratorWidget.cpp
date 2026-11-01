@@ -146,6 +146,34 @@ void PasswordGeneratorWidget::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
     reflowCharacterButtons();
+    updateStatsLabelWrap();
+}
+
+// Wraps the password stats only when they don't fit on one line. A word-wrapped QLabel asks for
+// a narrow width even when there is room, so wrapping can't simply stay on.
+void PasswordGeneratorWidget::updateStatsLabelWrap()
+{
+    const QList<QLabel*> labels = {m_ui->strengthLabel, m_ui->passwordLengthLabel, m_ui->entropyLabel};
+
+    // Each label sits between two layout gaps and a spacer
+    int singleLineWidth = (2 * labels.size() - 2) * m_ui->passwordStrengthTextLayout->spacing();
+    for (auto* label : labels) {
+        QFontMetrics metrics(label->font());
+        int longestWord = 0;
+        for (const auto& word : label->text().split(' ', Qt::SkipEmptyParts)) {
+            longestWord = qMax(longestWord, metrics.horizontalAdvance(word));
+        }
+        label->setMinimumWidth(longestWord + 2 * label->margin());
+        singleLineWidth += metrics.horizontalAdvance(label->text()) + 2 * label->margin();
+    }
+
+    // The stats share a column with the password field, whose width doesn't depend on the wrapping
+    bool wrap = isVisible() && m_ui->editNewPassword->width() < singleLineWidth;
+    for (auto* label : labels) {
+        if (label->wordWrap() != wrap) {
+            label->setWordWrap(wrap);
+        }
+    }
 }
 
 // Puts as many character class buttons on each row as the group box allows, so the
@@ -399,11 +427,14 @@ void PasswordGeneratorWidget::updatePasswordStrength()
         m_ui->strengthLabel->setText(tr("Password Quality: %1").arg(tr("Excellent", "Password quality")));
         break;
     }
+
+    updateStatsLabelWrap();
 }
 
 void PasswordGeneratorWidget::updatePasswordLengthLabel(const QString& password)
 {
     m_ui->passwordLengthLabel->setText(tr("Characters: %1").arg(QString::number(password.length())));
+    updateStatsLabelWrap();
 }
 
 void PasswordGeneratorWidget::applyPassword()
