@@ -94,6 +94,7 @@ private:
     int m_characterButtonCount = 0;
 
     void reflowCharacterButtons();
+    void updateStatsLabelWrap();
     void adjustPopupSize();
     PasswordGenerator::CharClasses charClasses();
     PasswordGenerator::GeneratorFlags generatorFlags();
