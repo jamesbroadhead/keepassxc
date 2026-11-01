@@ -22,6 +22,7 @@
 #include <QCheckBox>
 #include <QClipboard>
 #include <QDialog>
+#include <QGroupBox>
 #include <QListWidget>
 #include <QMenu>
 #include <QMenuBar>
@@ -1092,7 +1093,16 @@ void TestGui::testPasswordGeneratorNarrowWidth()
         // Roughly a third of a laptop screen, as when tiled by a window manager, with room for wider fonts
         generator.resize(520, generator.height());
         QTRY_COMPARE(generator.width(), 520);
-        QTRY_VERIFY(extAsciiButton->y() > upperButton->y());
+        auto* groupBox = generator.findChild<QGroupBox*>("groupBox");
+        for (auto* button : groupBox->findChildren<QPushButton*>(QString(), Qt::FindDirectChildrenOnly)) {
+            if (button->isVisible()) {
+                QVERIFY(groupBox->contentsRect().contains(button->geometry()));
+            }
+        }
+        if (advanced) {
+            // Ten buttons can't fit five to a row at this width
+            QTRY_VERIFY(extAsciiButton->y() > upperButton->y());
+        }
     }
 }
 
