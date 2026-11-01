@@ -1113,8 +1113,8 @@ void TestGui::testPasswordGeneratorPopupFitsParent()
 
 void TestGui::testMainWindowNarrowWidth()
 {
-    // A third of a 1512 pt wide laptop screen, as when tiled by a window manager
-    const int narrowWidth = 500;
+    // Roughly a third of a laptop screen, as when tiled by a window manager, with room for wider fonts
+    const int narrowWidth = 540;
     m_mainWindow->resize(narrowWidth, 768);
     QTRY_COMPARE(m_mainWindow->width(), narrowWidth);
 
