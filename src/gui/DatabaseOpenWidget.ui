@@ -132,12 +132,6 @@
         </item>
         <item>
          <widget class="QStackedWidget" name="centralStack">
-          <property name="minimumSize">
-           <size>
-            <width>650</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>

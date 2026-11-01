@@ -44,6 +44,7 @@ signals:
 protected:
     void keyPressEvent(QKeyEvent* event) override;
     void showEvent(QShowEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 private slots:
     void openDatabaseFromFile(QListWidgetItem* item);
@@ -51,6 +52,9 @@ private slots:
 private:
     const QScopedPointer<Ui::WelcomeWidget> m_ui;
     void removeFromLastDatabases(QListWidgetItem* item);
+    void updateButtonLayout();
+
+    int m_buttonRowMinimumWidth = 0;
 };
 
 #endif // KEEPASSX_WELCOMEWIDGET_H

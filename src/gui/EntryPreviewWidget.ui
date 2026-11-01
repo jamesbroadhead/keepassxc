@@ -325,12 +325,6 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>150</width>
-                  <height>0</height>
-                 </size>
-                </property>
                 <property name="cursor">
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
@@ -485,12 +479,6 @@
                 </item>
                 <item>
                  <widget class="QLineEdit" name="entryUsernameLabel">
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>0</height>
-                   </size>
-                  </property>
                   <property name="focusPolicy">
                    <enum>Qt::ClickFocus</enum>
                   </property>

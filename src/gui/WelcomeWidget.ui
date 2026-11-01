@@ -11,16 +11,10 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>450</width>
-    <height>0</height>
-   </size>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -91,6 +85,9 @@
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
@@ -100,6 +97,9 @@
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -120,7 +120,7 @@
     </spacer>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="buttonLayout">
      <item>
       <widget class="QPushButton" name="buttonNewDatabase">
        <property name="text">

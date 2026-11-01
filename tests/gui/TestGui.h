@@ -53,6 +53,8 @@ private slots:
     void testDicewareEntryEntropy();
     void testPasswordGeneratorNarrowWidth();
     void testPasswordGeneratorPopupFitsParent();
+    void testMainWindowNarrowWidth();
+    void testWelcomeWidgetNarrowWidth();
     void testTotp();
     void testSearch();
     void testDeleteEntry();

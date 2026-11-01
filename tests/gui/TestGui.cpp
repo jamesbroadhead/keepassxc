@@ -30,6 +30,7 @@
 #include <QPointer>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QScrollArea>
 #include <QSignalSpy>
 #include <QSpinBox>
 #include <QTableWidget>
@@ -54,6 +55,7 @@
 #include "gui/ShortcutSettingsPage.h"
 #include "gui/TotpDialog.h"
 #include "gui/TotpSetupDialog.h"
+#include "gui/WelcomeWidget.h"
 #include "gui/databasekey/KeyFileEditWidget.h"
 #include "gui/databasekey/PasswordEditWidget.h"
 #include "gui/dbsettings/DatabaseSettingsDialog.h"
@@ -1106,6 +1108,53 @@ void TestGui::testPasswordGeneratorPopupFitsParent()
 
     generator->close();
     QTRY_VERIFY(generator.isNull());
+}
+
+void TestGui::testMainWindowNarrowWidth()
+{
+    // A third of a 1512 pt wide laptop screen, as when tiled by a window manager
+    const int narrowWidth = 500;
+    m_mainWindow->resize(narrowWidth, 768);
+    QTRY_COMPARE(m_mainWindow->width(), narrowWidth);
+
+    // Database pages ignore their minimum size, so check their content fits instead
+    triggerAction("actionEntryNew");
+    QCOMPARE(m_dbWidget->currentMode(), DatabaseWidget::Mode::EditEntryMode);
+    auto* editEntryWidget = m_dbWidget->findChild<EditEntryWidget*>("editEntryWidget");
+    auto* entryForm = editEntryWidget->findChild<QScrollArea*>("EditEntryWidgetMain");
+    QTRY_VERIFY(entryForm->widget()->minimumSizeHint().width() <= entryForm->viewport()->width());
+    QTest::mouseClick(editEntryWidget->findChild<QDialogButtonBox*>("buttonBox")->button(QDialogButtonBox::Cancel),
+                      Qt::LeftButton);
+
+    MessageBox::setNextAnswer(MessageBox::Cancel);
+    triggerAction("actionLockAllDatabases");
+    QTRY_VERIFY(m_dbWidget->isLocked());
+    auto* unlockWidget = m_dbWidget->findChild<QWidget*>("databaseOpenWidget");
+    QTRY_VERIFY(unlockWidget->minimumSizeHint().width() <= unlockWidget->width());
+
+    auto* editPassword =
+        unlockWidget->findChild<PasswordWidget*>("editPassword")->findChild<QLineEdit*>("passwordEdit");
+    QTest::keyClicks(editPassword, "a");
+    QTest::keyClick(editPassword, Qt::Key_Enter);
+    QTRY_VERIFY(!m_dbWidget->isLocked());
+
+    m_mainWindow->resize(1024, 768);
+}
+
+void TestGui::testWelcomeWidgetNarrowWidth()
+{
+    WelcomeWidget welcome;
+    welcome.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&welcome));
+
+    auto* newButton = welcome.findChild<QPushButton*>("buttonNewDatabase");
+    auto* importButton = welcome.findChild<QPushButton*>("buttonImport");
+
+    welcome.resize(1000, welcome.height());
+    QTRY_COMPARE(importButton->y(), newButton->y());
+
+    welcome.resize(welcome.minimumWidth(), welcome.height());
+    QTRY_VERIFY(importButton->y() > newButton->y());
 }
 
 void TestGui::testTotp()

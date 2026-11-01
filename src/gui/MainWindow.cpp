@@ -237,6 +237,7 @@ MainWindow::MainWindow()
     connect(YubiKey::instance(), SIGNAL(challengeCompleted()), SLOT(hideYubiKeyPopup()), Qt::QueuedConnection);
 
     setWindowIcon(icons()->applicationIcon());
+    m_ui->globalMessageWidget->setWordWrap(true);
     m_ui->globalMessageWidget->hideMessage();
     connect(m_ui->globalMessageWidget, &MessageWidget::linkActivated, &MessageWidget::openHttpUrl);
 

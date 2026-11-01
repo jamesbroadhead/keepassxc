@@ -111,5 +111,31 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event)
 void WelcomeWidget::showEvent(QShowEvent* event)
 {
     refreshLastDatabases();
+
+    // Measure the buttons both side by side and stacked, so they can stack when the window is
+    // too narrow for one row, e.g. when tiled to a third of the screen
+    ensurePolished();
+    m_ui->buttonLayout->setDirection(QBoxLayout::TopToBottom);
+    layout()->invalidate();
+    setMinimumWidth(layout()->minimumSize().width());
+    m_ui->buttonLayout->setDirection(QBoxLayout::LeftToRight);
+    layout()->invalidate();
+    m_buttonRowMinimumWidth = layout()->minimumSize().width();
+    updateButtonLayout();
+
     QWidget::showEvent(event);
+}
+
+void WelcomeWidget::resizeEvent(QResizeEvent* event)
+{
+    QWidget::resizeEvent(event);
+    updateButtonLayout();
+}
+
+void WelcomeWidget::updateButtonLayout()
+{
+    auto direction = width() < m_buttonRowMinimumWidth ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight;
+    if (m_ui->buttonLayout->direction() != direction) {
+        m_ui->buttonLayout->setDirection(direction);
+    }
 }
