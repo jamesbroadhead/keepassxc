@@ -62,7 +62,6 @@ void EditWidget::addPage(const QString& labelText, const QIcon& icon, QWidget* w
         auto* scrollArea = new QScrollArea(m_ui->stackedWidget);
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setFrameShadow(QFrame::Plain);
-        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         scrollArea->setSizeAdjustPolicy(QScrollArea::AdjustToContents);
         scrollArea->setWidgetResizable(true);
         scrollArea->setWidget(widget);
@@ -129,7 +128,7 @@ void EditWidget::setCurrentPage(int index)
 void EditWidget::setHeadline(const QString& text)
 {
     m_ui->headerLabel->setHidden(text.isEmpty());
-    m_ui->headerLabel->setText(text);
+    m_ui->headerLabel->setRawText(text);
 }
 
 QLabel* EditWidget::headlineLabel()

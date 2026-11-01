@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QSignalSpy>
 #include <QSpinBox>
 #include <QTableWidget>
@@ -1124,6 +1125,19 @@ void TestGui::testMainWindowNarrowWidth()
     auto* entryForm = editEntryWidget->findChild<QScrollArea*>("EditEntryWidgetMain");
     QTRY_VERIFY(entryForm->widget()->minimumSizeHint().width() <= entryForm->viewport()->width());
     QTest::mouseClick(editEntryWidget->findChild<QDialogButtonBox*>("buttonBox")->button(QDialogButtonBox::Cancel),
+                      Qt::LeftButton);
+
+    // Settings forms are too wide to fit, so they must scroll rather than clip
+    triggerAction("actionDatabaseSettings");
+    auto* dbSettingsWidget = m_dbWidget->findChild<QWidget*>("databaseSettingsDialog");
+    QTRY_VERIFY(dbSettingsWidget->isVisible());
+    for (auto* scrollArea : dbSettingsWidget->findChildren<QScrollArea*>()) {
+        if (scrollArea->isVisible() && scrollArea->widget()) {
+            QVERIFY(scrollArea->widget()->minimumSizeHint().width() <= scrollArea->viewport()->width()
+                    || scrollArea->horizontalScrollBar()->isVisible());
+        }
+    }
+    QTest::mouseClick(dbSettingsWidget->findChild<QDialogButtonBox*>("buttonBox")->button(QDialogButtonBox::Cancel),
                       Qt::LeftButton);
 
     MessageBox::setNextAnswer(MessageBox::Cancel);

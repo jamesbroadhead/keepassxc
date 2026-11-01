@@ -78,6 +78,9 @@
      <property name="text">
       <string>Hover over reason to show additional details. Double-click entries to edit.</string>
      </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>

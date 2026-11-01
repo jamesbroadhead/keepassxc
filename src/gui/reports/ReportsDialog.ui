@@ -9,10 +9,18 @@
       <widget class="CategoryListWidget" name="categoryList" native="true"/>
      </item>
      <item>
-      <widget class="QStackedWidget" name="stackedWidget">
-       <property name="currentIndex">
-        <number>-1</number>
+      <widget class="QScrollArea" name="stackedWidgetScrollArea">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
        </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+       </widget>
       </widget>
      </item>
     </layout>

@@ -61,7 +61,6 @@ DatabaseSettingsDialog::DatabaseSettingsDialog(QWidget* parent)
     auto* scrollArea = new QScrollArea(parent);
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setFrameShadow(QFrame::Plain);
-    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setSizeAdjustPolicy(QScrollArea::AdjustToContents);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(m_databaseKeyWidget);
