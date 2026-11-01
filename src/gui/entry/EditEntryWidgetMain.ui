@@ -156,11 +156,11 @@
      </widget>
     </item>
     <item row="7" column="1">
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,0">
-      <property name="spacing">
-       <number>6</number>
+     <layout class="QGridLayout" name="expiryLayout" columnstretch="0,1,0">
+      <property name="horizontalSpacing">
+       <number>8</number>
       </property>
-      <item>
+      <item row="0" column="0">
        <widget class="QCheckBox" name="expireCheck">
         <property name="toolTip">
          <string>Toggle expiration</string>
@@ -173,7 +173,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="1">
        <widget class="QDateTimeEdit" name="expireDatePicker">
         <property name="enabled">
          <bool>false</bool>
@@ -186,7 +186,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="2">
        <widget class="QPushButton" name="expirePresets">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

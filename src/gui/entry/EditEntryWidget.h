@@ -90,6 +90,9 @@ public:
     };
     bool switchToPage(Page page);
 
+protected:
+    bool eventFilter(QObject* watched, QEvent* event) override;
+
 signals:
     void editFinished(bool accepted);
     void historyEntryActivated(Entry* entry);
@@ -152,6 +155,7 @@ private slots:
 
 private:
     void setupMain();
+    void updateExpiryLayout();
     void setupAdvanced();
     void setupIcon();
     void setupAutoType();
@@ -183,6 +187,7 @@ private:
 
     bool m_create;
     bool m_history;
+    int m_expiryRowMinimumWidth = 0;
 #ifdef KPXC_FEATURE_SSHAGENT
     KeeAgentSettings m_sshAgentSettings;
     QString m_pendingPrivateKey;

@@ -275,6 +275,38 @@ void EditEntryWidget::setupMain()
 
     m_mainUi->expirePresets->setMenu(createPresetsMenu());
     connect(m_mainUi->expirePresets->menu(), SIGNAL(triggered(QAction*)), this, SLOT(useExpiryPreset(QAction*)));
+
+    m_mainWidget->viewport()->installEventFilter(this);
+}
+
+bool EditEntryWidget::eventFilter(QObject* watched, QEvent* event)
+{
+    if (watched == m_mainWidget->viewport() && event->type() == QEvent::Resize) {
+        updateExpiryLayout();
+    }
+    return EditWidget::eventFilter(watched, event);
+}
+
+// Moves the expiry presets under the date picker when the form is too narrow for one row,
+// e.g. when the window is tiled to a third of the screen
+void EditEntryWidget::updateExpiryLayout()
+{
+    auto* layout = m_mainUi->expiryLayout;
+    bool stacked = layout->itemAtPosition(1, 1) != nullptr;
+    if (!stacked) {
+        m_expiryRowMinimumWidth = m_mainUi->container->minimumSizeHint().width();
+    }
+
+    bool stack = m_mainWidget->viewport()->width() < m_expiryRowMinimumWidth;
+    if (stack == stacked) {
+        return;
+    }
+    layout->removeWidget(m_mainUi->expirePresets);
+    if (stack) {
+        layout->addWidget(m_mainUi->expirePresets, 1, 1, Qt::AlignLeft);
+    } else {
+        layout->addWidget(m_mainUi->expirePresets, 0, 2);
+    }
 }
 
 void EditEntryWidget::setupAdvanced()
