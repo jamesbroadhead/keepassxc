@@ -72,6 +72,7 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 private slots:
     void updateButtonsEnabled(const QString& password);
@@ -89,7 +90,11 @@ private:
     bool m_standalone = false;
     bool m_passwordGenerated = false;
     int m_firstCustomWordlistIndex;
+    int m_characterButtonColumns = 0;
+    int m_characterButtonCount = 0;
 
+    void reflowCharacterButtons();
+    void adjustPopupSize();
     PasswordGenerator::CharClasses charClasses();
     PasswordGenerator::GeneratorFlags generatorFlags();
 

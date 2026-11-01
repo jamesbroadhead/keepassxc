@@ -27,6 +27,7 @@
 #include <QMenuBar>
 #include <QMimeData>
 #include <QPlainTextEdit>
+#include <QPointer>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSignalSpy>
@@ -1066,6 +1067,45 @@ void TestGui::testDicewareEntryEntropy()
 
         QTest::mouseClick(generatedPassword, Qt::LeftButton);
         QTest::keyClick(generatedPassword, Qt::Key_Escape););
+}
+
+void TestGui::testPasswordGeneratorNarrowWidth()
+{
+    PasswordGeneratorWidget generator;
+    generator.setStandaloneMode(true);
+    generator.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&generator));
+
+    auto* advancedButton = generator.findChild<QPushButton*>("buttonAdvancedMode");
+    auto* upperButton = generator.findChild<QPushButton*>("checkBoxUpper");
+    auto* extAsciiButton = generator.findChild<QPushButton*>("checkBoxExtASCII");
+
+    for (bool advanced : {false, true}) {
+        advancedButton->setChecked(advanced);
+
+        generator.resize(1000, generator.height());
+        QTRY_COMPARE(extAsciiButton->y(), upperButton->y());
+
+        // A third of a 1512 pt wide laptop screen, as when tiled by a window manager
+        generator.resize(500, generator.height());
+        QTRY_COMPARE(generator.width(), 500);
+        QTRY_VERIFY(extAsciiButton->y() > upperButton->y());
+    }
+}
+
+void TestGui::testPasswordGeneratorPopupFitsParent()
+{
+    QWidget parent;
+    parent.resize(500, 800);
+    parent.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&parent));
+
+    QPointer<PasswordGeneratorWidget> generator = PasswordGeneratorWidget::popupGenerator(&parent);
+    QTRY_VERIFY(generator->isVisible());
+    QVERIFY(generator->width() <= parent.width());
+
+    generator->close();
+    QTRY_VERIFY(generator.isNull());
 }
 
 void TestGui::testTotp()

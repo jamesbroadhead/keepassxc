@@ -132,6 +132,86 @@ void PasswordGeneratorWidget::closeEvent(QCloseEvent* event)
     QWidget::closeEvent(event);
 }
 
+void PasswordGeneratorWidget::adjustPopupSize()
+{
+    adjustSize();
+    // Don't spill past the window that opened the generator when it is tiled narrow
+    if (auto* parent = parentWidget()) {
+        auto width = qMax(qMin(this->width(), parent->window()->width()), minimumSizeHint().width());
+        resize(width, height());
+    }
+}
+
+void PasswordGeneratorWidget::resizeEvent(QResizeEvent* event)
+{
+    QWidget::resizeEvent(event);
+    reflowCharacterButtons();
+}
+
+// Puts as many character class buttons on each row as the group box allows, so the
+// generator still fits when its window is tiled to a third of the screen
+void PasswordGeneratorWidget::reflowCharacterButtons()
+{
+    QList<QWidget*> buttons;
+    for (auto* button : {m_ui->checkBoxUpper,
+                         m_ui->checkBoxLower,
+                         m_ui->checkBoxNumbers,
+                         m_ui->checkBoxSpecialChars,
+                         m_ui->checkBoxExtASCII,
+                         m_ui->checkBoxPunctuation,
+                         m_ui->checkBoxQuotes,
+                         m_ui->checkBoxDashes,
+                         m_ui->checkBoxMath,
+                         m_ui->checkBoxBraces}) {
+        if (!button->isHidden()) {
+            buttons << button;
+        }
+    }
+
+    auto* grid = m_ui->characterButtons;
+    auto gridWidth = [&](int columns) {
+        int width = (columns - 1) * grid->horizontalSpacing();
+        for (int column = 0; column < columns; ++column) {
+            int columnWidth = 0;
+            for (int i = column; i < buttons.size(); i += columns) {
+                columnWidth = qMax(columnWidth, buttons[i]->sizeHint().width());
+            }
+            width += columnWidth;
+        }
+        return width;
+    };
+
+    // Frame, margins and spacers around the buttons
+    const int chrome = m_ui->groupBox->minimumSizeHint().width() - m_ui->characterTypesLayout->minimumSize().width();
+    const int maxColumns = 5;
+    const int minColumns = 2;
+
+    // Until the widget is laid out its width means nothing, so keep the full row for the initial size hint
+    int columns = maxColumns;
+    while (isVisible() && columns > minColumns && chrome + gridWidth(columns) > m_ui->groupBox->width()) {
+        --columns;
+    }
+
+    int minimumWidth = gridWidth(minColumns);
+    if (m_ui->advancedContainer->isVisibleTo(this)) {
+        minimumWidth = qMax(minimumWidth, m_ui->advancedContainer->minimumSizeHint().width());
+    }
+    m_ui->groupBox->setMinimumWidth(chrome + minimumWidth);
+
+    if (columns == m_characterButtonColumns && buttons.size() == m_characterButtonCount) {
+        return;
+    }
+    m_characterButtonColumns = columns;
+    m_characterButtonCount = buttons.size();
+
+    for (auto* button : buttons) {
+        grid->removeWidget(button);
+    }
+    for (int i = 0; i < buttons.size(); ++i) {
+        grid->addWidget(buttons[i], i / columns, i % columns);
+    }
+}
+
 PasswordGeneratorWidget* PasswordGeneratorWidget::popupGenerator(QWidget* parent)
 {
     auto pwGenerator = new PasswordGeneratorWidget(parent);
@@ -144,7 +224,7 @@ PasswordGeneratorWidget* PasswordGeneratorWidget::popupGenerator(QWidget* parent
     pwGenerator->show();
     pwGenerator->raise();
     pwGenerator->activateWindow();
-    pwGenerator->adjustSize();
+    pwGenerator->adjustPopupSize();
 
     return pwGenerator;
 }
@@ -477,9 +557,10 @@ void PasswordGeneratorWidget::setAdvancedMode(bool advanced)
     m_ui->checkBoxQuotes->setVisible(advanced);
     m_ui->checkBoxMath->setVisible(advanced);
     m_ui->checkBoxDashes->setVisible(advanced);
+    reflowCharacterButtons();
 
     if (!m_standalone) {
-        QTimer::singleShot(50, this, [this] { adjustSize(); });
+        QTimer::singleShot(50, this, [this] { adjustPopupSize(); });
     }
 }
 
