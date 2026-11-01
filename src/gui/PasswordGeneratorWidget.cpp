@@ -169,11 +169,21 @@ void PasswordGeneratorWidget::updateStatsLabelWrap()
 
     // The stats share a column with the password field, whose width doesn't depend on the wrapping
     bool wrap = isVisible() && m_ui->editNewPassword->width() < singleLineWidth;
-    for (auto* label : labels) {
-        if (label->wordWrap() != wrap) {
-            label->setWordWrap(wrap);
-        }
+    if (m_ui->strengthLabel->wordWrap() == wrap) {
+        return;
     }
+
+    // While wrapped, give the labels the whole row so each wraps as little as possible
+    for (auto* label : labels) {
+        label->setWordWrap(wrap);
+        auto policy = label->sizePolicy();
+        policy.setHorizontalPolicy(wrap ? QSizePolicy::Expanding : QSizePolicy::Preferred);
+        label->setSizePolicy(policy);
+    }
+    for (auto* spacer : {m_ui->horizontalSpacer_2, m_ui->horizontalSpacer_6}) {
+        spacer->changeSize(0, 20, wrap ? QSizePolicy::Fixed : QSizePolicy::Expanding, QSizePolicy::Minimum);
+    }
+    m_ui->passwordStrengthTextLayout->invalidate();
 }
 
 // Puts as many character class buttons on each row as the group box allows, so the
