@@ -73,6 +73,7 @@ private slots:
 
 private:
     void setTabEnabled(QTabWidget* tabWidget, QWidget* widget, bool enabled);
+    void updateEntryGeneralLayout();
 
     static QString hierarchy(const Group* group, const QString& title);
 
@@ -83,6 +84,7 @@ private:
     QTimer m_totpTimer;
     quint8 m_selectedTabEntry;
     quint8 m_selectedTabGroup;
+    int m_entryGeneralTwoColumnWidth = 0;
 };
 
 #endif // KEEPASSX_DETAILSWIDGET_H

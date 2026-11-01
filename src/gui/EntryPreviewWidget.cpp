@@ -67,6 +67,7 @@ EntryPreviewWidget::EntryPreviewWidget(QWidget* parent)
     m_ui->groupNotesTextEdit->document()->setDocumentMargin(0);
 
     m_ui->entryTotpLabel->installEventFilter(this);
+    m_ui->entryGeneralWidget->installEventFilter(this);
 
     connect(m_ui->entryTotpButton, SIGNAL(toggled(bool)), m_ui->entryTotp, SLOT(setVisible(bool)));
     connect(m_ui->entryCloseButton, SIGNAL(clicked()), SLOT(hide()));
@@ -117,7 +118,57 @@ bool EntryPreviewWidget::eventFilter(QObject* object, QEvent* event)
             return true;
         }
     }
+    if (object == m_ui->entryGeneralWidget && event->type() == QEvent::Resize) {
+        updateEntryGeneralLayout();
+    }
     return QWidget::eventFilter(object, event);
+}
+
+// Moves URL and expiration under username and password when the two columns don't fit side by side,
+// e.g. when the window is tiled to a third of the screen
+void EntryPreviewWidget::updateEntryGeneralLayout()
+{
+    auto* grid = m_ui->entryGeneralLayout;
+    bool stacked = grid->itemAtPosition(4, 0) != nullptr;
+    if (!stacked) {
+        m_entryGeneralTwoColumnWidth = m_ui->entryGeneralWidget->minimumSizeHint().width();
+    }
+
+    bool stack = m_ui->entryGeneralWidget->width() < m_entryGeneralTwoColumnWidth;
+    if (stack == stacked) {
+        return;
+    }
+
+    auto move = [grid](QWidget* widget, int row, int column, int columnSpan) {
+        grid->removeWidget(widget);
+        grid->addWidget(widget, row, column, 1, columnSpan);
+    };
+    QLayoutItem* notes = nullptr;
+    for (int i = 0; i < grid->count(); ++i) {
+        if (grid->itemAt(i)->layout() == m_ui->entryNotesLayout) {
+            notes = grid->takeAt(i);
+            break;
+        }
+    }
+
+    if (stack) {
+        move(m_ui->entryUrlTitleLabel, 2, 0, 1);
+        move(m_ui->entryUrlLabel, 2, 1, 2);
+        move(m_ui->entryExpirationTitleLabel, 3, 0, 1);
+        move(m_ui->entryExpirationLabel, 3, 1, 2);
+    } else {
+        move(m_ui->entryUrlTitleLabel, 0, 4, 1);
+        move(m_ui->entryUrlLabel, 0, 5, 1);
+        move(m_ui->entryExpirationTitleLabel, 1, 4, 1);
+        move(m_ui->entryExpirationLabel, 1, 5, 1);
+    }
+    int firstRow = stack ? 4 : 2;
+    move(m_ui->entryTagsTitleLabel, firstRow, 0, 1);
+    move(m_ui->entryTagsList, firstRow, 1, 5);
+    move(m_ui->entryNotesTitleLabel, firstRow + 1, 0, 1);
+    grid->addItem(notes, firstRow + 1, 1, 1, 5);
+    grid->setRowStretch(3, stack ? 0 : 1);
+    grid->setRowStretch(5, stack ? 1 : 0);
 }
 
 void EntryPreviewWidget::clear()
